@@ -75,7 +75,7 @@ $commentController = new CommentController($services['commentService'](), $servi
 
 $requestPath = explode('?', $_SERVER['REQUEST_URI'])[0];
 $router = new Router($requestPath);
-$router->setBasePath('/stupid-blog-overkill/');
+$router->setBasePath('/stupid-blog-overkill-overkill/');
 
 $router->get('/', function () use ($services) {
     $services['viewRenderer']()->render('index');
