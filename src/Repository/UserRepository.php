@@ -17,7 +17,7 @@ class UserRepository implements RepositoryInterface
 
     public function save($user)
     {
-        var_dump($_SESSION);
+        // var_dump($_SESSION);
         if (empty($_SESSION)) {
             $this->insert($user);
         } else {

@@ -7,7 +7,7 @@ use App\Repository\CommentRepository;
 use App\Class\Database;
 use App\Interface\UserInterface;
 
-class UserModel implements UserInterface
+class GoogleUserModel implements UserInterface
 {
     private $id;
     private $email;
@@ -131,15 +131,14 @@ class UserModel implements UserInterface
     }
 
     public function getWelcomeMessage(): string {
-        return "Bienvenue, " . $this->getFirstName() . " vous êtes un utilisateur !";
+        return "Bienvenue sur notre blog! Vous êtes connecté avec Google";
     }
 
     public function canCreatePost(): bool {
-        return true; 
+        return false; 
     }
 
     public function getProfileData(): array {
-        return ['posts' => 'Liste de vos posts...'];
+        return [];
     }
-
 }
