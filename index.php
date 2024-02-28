@@ -1,9 +1,12 @@
 <?php
+
 use App\Class\Database;
 use App\Controller\CommentController;
 use App\Controller\PostController;
 use App\Class\Redirector;
 use App\Controller\UserController;
+use App\Decorator\BaseAuthDecorator;
+use App\Interface\AuthInterface;
 use App\Repository\CommentRepository;
 use App\Repository\PostRepository;
 use App\Repository\UserRepository;
@@ -12,6 +15,9 @@ use App\Service\CommentService;
 use App\Service\PostService;
 use App\Service\UserService;
 use App\View\ViewRenderer;
+use App\Service\ApiAuthService;
+use App\Service\GoogleAuthService;
+
 require_once 'vendor/autoload.php';
 
 session_start();
@@ -50,12 +56,26 @@ $services['commentService'] = function () use ($services) {
     return new CommentService($services['commentRepository']());
 };
 
-$userController = new UserController($services['userService'](), $services['viewRenderer'](), $services['redirector']());
+$services['apiAuthService'] = function () use ($services) {
+    return new ApiAuthService($services['userRepository']());
+};
+
+$services['googleAuthService'] = function () {
+    return new GoogleAuthService();
+};
+
+$services['baseAuthDecorator'] = function () use ($services) {
+    return new BaseAuthDecorator($services['apiAuthService'](), $services['googleAuthService']());
+};
+
+
+$userController = new UserController($services['userService'](), $services['viewRenderer'](), $services['redirector'](), $services['apiAuthService'](), $services['baseAuthDecorator']());
 $postController = new PostController($services['postService'](), $services['viewRenderer'](), $services['redirector'](), $services['postRepository']());
 $commentController = new CommentController($services['commentService'](), $services['viewRenderer'](), $services['redirector']());
 
-$router = new Router($_SERVER['REQUEST_URI']);
-$router->setBasePath('/stupid-blog/');
+$requestPath = explode('?', $_SERVER['REQUEST_URI'])[0];
+$router = new Router($requestPath);
+$router->setBasePath('/stupid-blog-overkill/');
 
 $router->get('/', function () use ($services) {
     $services['viewRenderer']()->render('index');
@@ -83,6 +103,22 @@ $router->post('/login', function () use ($userController) {
     $userController->loginUser($_POST);
 }, "login");
 
+$router->get('/google', function () use ($userController) {
+    $userController->loginUser(['google' => true]);
+    
+}, "google");
+
+$router->get('/auth/google/callback', function () use ($services) {
+    // L'exécution passe ici après l'authentification Google
+    // $_GET['code'] contiendra le code d'authentification
+    $googleAuthService = $services['googleAuthService']();
+    $googleAuthService->handleGoogleCallback($_GET);
+}, "google_callback");
+
+// $router->post('/auth/google/callback', function () use ($userController) {
+//     $userController->loginUser($_POST);
+// }, "google_callback");
+
 $router->get('/logout', function () use ($userController) {
     $userController->logoutUser();
 }, "logout");
@@ -96,8 +132,7 @@ $router->get('/profile', function () use ($userController) {
 $router->post('/profile', function () use ($userController) {
     // var_dump($_POST); die;
     $userController->update($_POST);
-
-}, "profile"); 
+}, "profile");
 
 // Pagination 
 

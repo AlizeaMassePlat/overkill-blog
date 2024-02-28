@@ -110,31 +110,6 @@ class UserService implements ServiceInterface
         return false;
     }
 
-    public function authenticate($data): bool {
-
-        $email = $data['email'] ?? '';
-        $password = $data['password'] ?? '';
-      
-        if (empty($email) || empty($password)) {
-            throw new \Exception("Tous les champs sont obligatoires");
-        }
-
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new \Exception("L'email n'est pas valide");
-        }
-
-        $user = $this->userRepository->findOneByEmail($email);
-
-        if (!$user || !password_verify($password, $user->getPassword())) {
-            throw new \Exception("Les identifiants sont incorrects");
-        }
-
-        $user->setPassword('');
-        $_SESSION['user'] = $user;
-
-        return true;
-    }
-
     public function register($data)
     {
         $email = $data['email'] ?? '';

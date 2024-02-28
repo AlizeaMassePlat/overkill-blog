@@ -7,7 +7,7 @@ use App\Repository\CommentRepository;
 use App\Class\Database;
 use App\Interface\UserInterface;
 
-class UserModel implements UserInterface
+class AdminUserModel implements UserInterface
 {
     private $id;
     private $email;
@@ -131,7 +131,7 @@ class UserModel implements UserInterface
     }
 
     public function getWelcomeMessage(): string {
-        return "Bienvenue, " . $this->getFirstName() . " vous êtes un utilisateur !";
+        return "Bienvenue, " . $this->getFirstName() . " vous êtes administrateur!";
     }
 
     public function canCreatePost(): bool {
@@ -139,7 +139,6 @@ class UserModel implements UserInterface
     }
 
     public function getProfileData(): array {
-        return ['posts' => 'Liste de vos posts...'];
+        return ['posts' => 'Liste de tous les posts', 'users' => 'Liste des utilisateurs'];
     }
-
 }

@@ -26,4 +26,6 @@ use App\Router\Router;
         </div>
     </form>
 
+    <a href="google" class="google-login-btn">Login with Google</a>
+
 </body>
