@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Interface\ServiceInterface;
 use App\Repository\CommentRepository;
 use App\Model\CommentModel;
+use App\Iterator\CommentIterator;
 
 class CommentService implements ServiceInterface
 {
@@ -51,12 +52,13 @@ class CommentService implements ServiceInterface
 
     public function getById($id)
     {
-      return $this->commentRepository->findOneById($id);
+        return $this->commentRepository->findOneById($id);
     }
-  
+
     public function getAll()
     {
-      return $this->commentRepository->findAll();
+        $comments = $this->commentRepository->findAll();
+        return new CommentIterator($comments);
     }
 
     public function toArray($comment): array

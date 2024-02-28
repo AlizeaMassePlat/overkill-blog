@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Repository\PostRepository;
 use App\Model\PostModel;
 use App\Interface\ServiceInterface;
+use App\Iterator\PostIterator;
 
 class PostService implements ServiceInterface
 {
@@ -49,11 +50,19 @@ class PostService implements ServiceInterface
 
   public function getAll()
   {
-    return $this->postRepository->findAll();
+    $posts = $this->postRepository->findAll();
+    return new PostIterator($posts);
   }
 
   public function toArray($post): array
   {
+    // Récupération des IDs des commentaires
+    $commentsIds = [];
+    foreach ($post->getComments() as $comment) {
+      $commentsIds[] = $comment->getId();
+    }
+
+    // Construction du tableau de données
     return [
       'id' => $post->getId(),
       'title' => $post->getTitle(),
@@ -61,9 +70,10 @@ class PostService implements ServiceInterface
       'created_at' => $post->getCreatedAt()->format('Y-m-d H:i:s'),
       'updated_at' => $post->getUpdatedAt() ? $post->getUpdatedAt()->format('Y-m-d H:i:s') : null,
       'user' => 'Placeholder for user', // $post->getUser()->getEmail(),
-      'comments' => array_map(fn ($comment) => $comment->getId(), $post->getComments()),
+      'comments' => $commentsIds,
       'category' => 'Placeholder for category' // $post->getCategory()->getName()
     ];
   }
+
 
 }
