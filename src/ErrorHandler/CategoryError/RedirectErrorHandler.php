@@ -7,8 +7,8 @@ use App\Class\Redirector;
 
 class RedirectErrorHandler extends AbstractErrorHandler
 {
-  private CategoryService $categoryService;
-  private Redirector $redirector;
+  private $categoryService;
+  private $redirector;
 
   public function __construct(CategoryService $categoryService, Redirector $redirector)
   {
@@ -16,7 +16,7 @@ class RedirectErrorHandler extends AbstractErrorHandler
     $this->redirector = $redirector;
   }
 
-  public function handleError($request)
+  public function handleError($request): ?string
   {
     try {
       // Tentative d'exécution de la logique de suppression
@@ -33,5 +33,8 @@ class RedirectErrorHandler extends AbstractErrorHandler
       // Si une exception est levée pendant la suppression, rediriger avec l'erreur
       $this->redirector->redirect('category', ['error' => $e->getMessage()]);
     }
+
+    // Retournez null car la redirection est effectuée
+    return null;
   }
 }

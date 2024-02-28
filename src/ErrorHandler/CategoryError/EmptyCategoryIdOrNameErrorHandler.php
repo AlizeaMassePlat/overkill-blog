@@ -1,10 +1,10 @@
 <?php
 
-namespace App\ErrorHandler\Category;
+namespace App\ErrorHandler\CategoryError;
 
-use App\ErrorHandler\Category\ErrorHandlerInterface;
+use App\ErrorHandler\CategoryError\AbstractErrorHandler;
 
-class EmptyCategoryIdOrNameErrorHandler implements ErrorHandlerInterface
+class EmptyCategoryIdOrNameErrorHandler extends AbstractErrorHandler
 {
   public function handleError($request): ?string
   {
@@ -14,6 +14,12 @@ class EmptyCategoryIdOrNameErrorHandler implements ErrorHandlerInterface
     if (is_null($categoryId) || empty($name)) {
       return 'Invalid category data';
     }
+    // Si le gestionnaire suivant est défini, passez la requête à ce gestionnaire
+    if ($this->nextHandler !== null) {
+      return $this->nextHandler->handleError($request);
+    }
+
+    // Si aucun gestionnaire suivant n'est défini, retournez null
     return null;
   }
 }
