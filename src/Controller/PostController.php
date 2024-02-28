@@ -7,6 +7,7 @@ use App\View\ViewRenderer;
 use App\Repository\PostRepository;
 use App\Interface\ControllerInterface;
 use App\Interface\ServiceInterface;
+use App\Iterator\PostIterator;
 
 class PostController implements ControllerInterface
 {
@@ -77,9 +78,9 @@ class PostController implements ControllerInterface
 
   public function paginatedPosts($page)
   {
-    $posts = $this->postRepository->findAllPaginated($page);
+    $postIterator = new PostIterator($this->postRepository->findAllPaginated($page));
     $pages = count($this->postRepository->findAll()) / 10;
-    $this->viewRenderer->render('posts', ['posts' => $posts, 'pages' => $pages]);
+    $this->viewRenderer->render('posts', ['posts' => $postIterator, 'pages' => $pages]);
   }
 
   public function viewPost($id, $error = null)
