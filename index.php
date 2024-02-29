@@ -4,6 +4,7 @@ use App\Router\Router;
 use App\Class\Database;
 use App\Class\Redirector;
 use App\View\ViewRenderer;
+use App\Router\RouterFacade;
 use App\Service\PostService;
 use App\Service\UserService;
 use App\Service\ApiAuthService;
@@ -106,14 +107,12 @@ RouterFacade::get('/google', function () use ($userController) {
 }, "google");
 
 RouterFacade::get('/auth/google/callback', function () use ($services) {
-$router->get('/auth/google/callback', function () use ($services) {
     $googleAuthService = $services['googleAuthService']();
     $googleAuthService->handleGoogleCallback($_GET);
 }, "google_callback");
 
-RouterFacade::get('/logout', function () use ($userController) {
 
-$router->get('/logout', function () use ($userController) {
+RouterFacade::get('/logout', function () use ($userController) {
     $userController->logoutUser();
 }, "logout");
 
@@ -122,13 +121,13 @@ RouterFacade::get('/profile', function () use ($userController) {
     $userController->profile();
 }, "profile");
 
-$router->post('/profile', function () use ($userController) {
+RouterFacade::post('/profile', function () use ($userController) {
     $userController->update($_POST);
 }, "profile");
 
 // Pagination 
 
-$router->get('/posts/:page', function ($page = 1) use ($postController) {
+RouterFacade::get('/posts/:page', function ($page = 1) use ($postController) {
     $pageNumber = is_numeric($page) ? (int)$page : 1; 
     $postController->paginatedPosts($pageNumber);
 }, "posts")->with('page', '[0-9]+');
@@ -139,7 +138,7 @@ RouterFacade::get('/post/:id', function ($id) use ($postController) {
 }, "post")->with('id', '[0-9]+');
 
 
-$router->post('/clone_post/:post_id', function ($postId) use ($services) {
+RouterFacade::post('/clone_post/:post_id', function ($postId) use ($services) {
        $formData = $_POST; 
        $formData['userId'] = $_SESSION['user']['id']; 
 
@@ -154,7 +153,7 @@ $router->post('/clone_post/:post_id', function ($postId) use ($services) {
 
 // Créer un commentaire 
 
-$router->post('/comments/:post_id', function ($post_id) use ($commentController, $services) {
+RouterFacade::post('/comments/:post_id', function ($post_id) use ($commentController, $services) {
     try {
         $_POST['post_id'] = $post_id;
         $commentController->create($_POST);
