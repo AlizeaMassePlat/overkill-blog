@@ -131,7 +131,7 @@ class GuestUserModel implements UserInterface
     }
 
     public function getWelcomeMessage(): string {
-        return "Bienvenue sur notre blog! Veuillez vous inscrire ou vous connecter.";
+        return "Bienvenue sur notre blog! Vous êtes invité.";
     }
 
     public function canCreatePost(): bool {

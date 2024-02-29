@@ -2,9 +2,11 @@
 
 namespace App\Model;
 
+use App\Interface\PostPrototypeInterface;
 use App\Model\CommentModel;
+use App\Service\PostService;
 
-class PostModel
+class PostModel implements PostPrototypeInterface
 {
   private $id;
   private $title;
@@ -13,10 +15,23 @@ class PostModel
   private $updatedAt;
   private $userId;
   private $comments;
-  private $categoryId;
 
-  public function __construct()
+  public function __construct($id = null, PostService $service = null)
   {
+      if ($id !== null && $service !== null) {
+          $post = $service->getById($id);
+          if ($post) {
+              $this->id = $post->id;
+              $this->title = $post->title;
+              $this->content = $post->content;
+              $this->createdAt = $post->createdAt;
+              $this->updatedAt = $post->updatedAt;
+              $this->userId = $post->userId;
+              $this->comments = $post->comments ?? [];
+          }
+      } else {
+          $this->createdAt = new \DateTime(); 
+      }
   }
 
   public function getId()
@@ -94,6 +109,10 @@ class PostModel
     return $this;
   }
 
+  public function __toString() {
+    return $this->title; 
+}
+
   public function addComment(CommentModel $comment)
   {
     if (!in_array($comment, $this->comments) && $comment->getPostId() === $this->id) {
@@ -114,16 +133,28 @@ class PostModel
     return $this;
   }
 
-  public function getCategoryId()
-  {
-    return $this->categoryId;
-  }
 
-  public function setCategoryId($categoryId)
-  {
-    $this->categoryId = $categoryId;
+  public function clone(): PostPrototypeInterface {
+    $clone = clone $this; 
+    return $clone;
+}
 
-    return $this;
+public function toArray($post): array
+  {
+    $commentsIds = [];
+    foreach ($post->getComments() as $comment) {
+      $commentsIds[] = $comment->getId();
+    }
+
+    return [
+      'id' => $post->getId(),
+      'title' => $post->getTitle(),
+      'content' => $post->getContent(),
+      'created_at' => $post->getCreatedAt()->format('Y-m-d H:i:s'),
+      'updated_at' => $post->getUpdatedAt() ? $post->getUpdatedAt()->format('Y-m-d H:i:s') : null,
+      'user' => $post->getUserId(),
+      'comments' => $commentsIds,
+    ];
   }
 
 }

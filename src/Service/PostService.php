@@ -18,20 +18,39 @@ class PostService implements ServiceInterface
 
   public function create($data)
   {
-    $title = $data['title'] ?? null;
-    $content = $data['content'] ?? null;
-    $userId = $data['userId'] ?? null;
-    $categoryId = $data['categoryId'] ?? null;
+    $arrayPost = $data->toArray($data);
+    $title = $arrayPost['title'];
+    $content = $arrayPost['content'];
+    $userId = $arrayPost['user'];
+    $createdAt = $arrayPost['created_at'];
 
     $post = new PostModel();
     $post->setTitle($title);
     $post->setContent($content);
     $post->setUserId($userId);
-    $post->setCategoryId($categoryId);
-    $post->setCreatedAt(new \DateTime());
+    $post->setCreatedAt($createdAt);
 
     $this->postRepository->save($post);
+    
   }
+
+  public function duplicate($id, $formData) {
+
+    $existingPost = $this->postRepository->findOneById($id);
+
+    if ($existingPost === null) {
+        return null;
+    }
+
+    $newPost = $existingPost->clone();
+    // méthodes non reconnues mais qui marchent 
+    $newPost->setTitle($formData['title'] ?? 'Nouveau titre du post');
+    $newPost->setContent($formData['content'] ?? 'Nouveau contenu du post');
+
+    $this->create($newPost);
+
+    return $newPost;
+}
 
   public function update($post): void
   {
@@ -56,24 +75,19 @@ class PostService implements ServiceInterface
 
   public function toArray($post): array
   {
-    // Récupération des IDs des commentaires
     $commentsIds = [];
     foreach ($post->getComments() as $comment) {
       $commentsIds[] = $comment->getId();
     }
 
-    // Construction du tableau de données
     return [
       'id' => $post->getId(),
       'title' => $post->getTitle(),
       'content' => $post->getContent(),
       'created_at' => $post->getCreatedAt()->format('Y-m-d H:i:s'),
       'updated_at' => $post->getUpdatedAt() ? $post->getUpdatedAt()->format('Y-m-d H:i:s') : null,
-      'user' => 'Placeholder for user', // $post->getUser()->getEmail(),
+      'user' => $post->getUserId(),
       'comments' => $commentsIds,
-      'category' => 'Placeholder for category' // $post->getCategory()->getName()
     ];
   }
-
-
 }

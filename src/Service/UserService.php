@@ -114,7 +114,7 @@ class UserService implements ServiceInterface
     {
         $email = $data['email'] ?? '';
         $password = $data['password'] ?? '';
-        $confirmPassword = $data['password_confirm'] ?? ''; // Assurez-vous que le nom de clé correspond à celui du formulaire HTML
+        $confirmPassword = $data['password_confirm'] ?? '';
         $firstname = $data['firstname'] ?? '';
         $lastname = $data['lastname'] ?? '';
 

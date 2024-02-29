@@ -28,11 +28,10 @@ class PostRepository implements RepositoryInterface
 
   public function insert($post)
   {
-    $stmt = $this->db->prepare('INSERT INTO post (title, content, user_id, category_id, created_at) VALUES (:title, :content, :user_id, :category_id, NOW())');
+    $stmt = $this->db->prepare('INSERT INTO post (title, content, user_id, created_at) VALUES (:title, :content, :user_id, NOW())');
     $stmt->bindValue(':title', $post->getTitle(), \PDO::PARAM_STR);
     $stmt->bindValue(':content', $post->getContent(), \PDO::PARAM_STR);
     $stmt->bindValue(':user_id', $post->getUserId(), \PDO::PARAM_INT);
-    $stmt->bindValue(':category_id', $post->getCategoryId(), \PDO::PARAM_INT);
     $stmt->execute();
     $post->setId($this->db->lastInsertId());
   }
@@ -67,7 +66,6 @@ class PostRepository implements RepositoryInterface
     $post->setCreatedAt(new DateTime($arrayPost['created_at']));
     $post->setUpdatedAt($arrayPost['updated_at'] ? new DateTime($arrayPost['updated_at']) : null);
     $post->setUserId($arrayPost['user_id']);
-    $post->setCategoryId($arrayPost['category_id']);
     $post->setComments($commentRepository->findByPost($arrayPost['id']));
     return $post;
   }
@@ -88,7 +86,6 @@ class PostRepository implements RepositoryInterface
       $post->setCreatedAt(new DateTime($arrayPost['created_at']));
       $post->setUpdatedAt($arrayPost['updated_at'] ? new DateTime($arrayPost['updated_at']) : null);
       $post->setUserId($arrayPost['user_id']);
-      $post->setCategoryId($arrayPost['category_id']);
       $post->setComments($commentRepository->findByPost($arrayPost['id']));
       $results[] = $post;
     }
@@ -119,7 +116,6 @@ class PostRepository implements RepositoryInterface
       $post->setCreatedAt(new DateTime($arrayPost['created_at']));
       $post->setUpdatedAt($arrayPost['updated_at'] ? new DateTime($arrayPost['updated_at']) : null);
       $post->setUserId($arrayPost['user_id']);
-      $post->setCategoryId($arrayPost['category_id']);
       $post->setComments($commentRepository->findByPost($arrayPost['id']));
       $results[] = $post;
     }
@@ -147,7 +143,6 @@ class PostRepository implements RepositoryInterface
       $post->setCreatedAt(new DateTime($arrayPost['created_at']));
       $post->setUpdatedAt($arrayPost['updated_at'] ? new DateTime($arrayPost['updated_at']) : null);
       $post->setUserId($arrayPost['user_id']);
-      $post->setCategoryId($arrayPost['category_id']);
       $post->setComments($commentRepository->findByPost($arrayPost['id']));
       $results[] = $post;
     }

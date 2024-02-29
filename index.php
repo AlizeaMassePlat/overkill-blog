@@ -1,22 +1,21 @@
 <?php
 
-use App\Class\Database;
-use App\Controller\CommentController;
-use App\Controller\PostController;
-use App\Class\Redirector;
-use App\Controller\UserController;
-use App\Decorator\BaseAuthDecorator;
-use App\Interface\AuthInterface;
-use App\Repository\CommentRepository;
-use App\Repository\PostRepository;
-use App\Repository\UserRepository;
 use App\Router\Router;
-use App\Service\CommentService;
+use App\Class\Database;
+use App\Class\Redirector;
+use App\View\ViewRenderer;
 use App\Service\PostService;
 use App\Service\UserService;
-use App\View\ViewRenderer;
 use App\Service\ApiAuthService;
+use App\Service\CommentService;
+use App\Controller\PostController;
+use App\Controller\UserController;
+use App\Repository\PostRepository;
+use App\Repository\UserRepository;
 use App\Service\GoogleAuthService;
+use App\Decorator\BaseAuthDecorator;
+use App\Controller\CommentController;
+use App\Repository\CommentRepository;
 
 require_once 'vendor/autoload.php';
 
@@ -109,15 +108,10 @@ $router->get('/google', function () use ($userController) {
 }, "google");
 
 $router->get('/auth/google/callback', function () use ($services) {
-    // L'exécution passe ici après l'authentification Google
-    // $_GET['code'] contiendra le code d'authentification
     $googleAuthService = $services['googleAuthService']();
     $googleAuthService->handleGoogleCallback($_GET);
 }, "google_callback");
 
-// $router->post('/auth/google/callback', function () use ($userController) {
-//     $userController->loginUser($_POST);
-// }, "google_callback");
 
 $router->get('/logout', function () use ($userController) {
     $userController->logoutUser();
@@ -130,14 +124,14 @@ $router->get('/profile', function () use ($userController) {
 }, "profile");
 
 $router->post('/profile', function () use ($userController) {
-    // var_dump($_POST); die;
     $userController->update($_POST);
 }, "profile");
 
 // Pagination 
 
 $router->get('/posts/:page', function ($page = 1) use ($postController) {
-    $postController->paginatedPosts($page);
+    $pageNumber = is_numeric($page) ? (int)$page : 1; 
+    $postController->paginatedPosts($pageNumber);
 }, "posts")->with('page', '[0-9]+');
 
 // Affichage et création des postes 
@@ -145,6 +139,20 @@ $router->get('/posts/:page', function ($page = 1) use ($postController) {
 $router->get('/post/:id', function ($id) use ($postController) {
     $postController->viewPost($id);
 }, "post")->with('id', '[0-9]+');
+
+
+$router->post('/clone_post/:post_id', function ($postId) use ($services) {
+       $formData = $_POST; 
+       $formData['userId'] = $_SESSION['user']['id']; 
+
+    $newPost = $services['postService']()->duplicate($postId, $formData);
+    if ($newPost) {
+        $services['redirector']()->redirect('posts', ['page' => 1]);
+    } else {
+    }
+}, 'clone_post')->with('post_id', '[0-9]+');
+
+
 
 // Créer un commentaire 
 

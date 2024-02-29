@@ -98,9 +98,7 @@ class UserController implements ControllerInterface
 
     
     public static function getUser() {
-        // var_dump($_SESSION);die; 
         if (isset($_SESSION['user'])) {
-            // Si vous avez stocké un objet UserModel pour les utilisateurs de l'API
             if ($_SESSION['user'] instanceof UserModel) {
                 return $_SESSION['user'];
             }
@@ -129,10 +127,6 @@ class UserController implements ControllerInterface
             $this->redirector->redirect('login');
             return;
         }
-    
-        // Aucun besoin de récupérer l'utilisateur de la base de données si vous avez toutes les informations nécessaires dans la session
-        // Si vous avez besoin de plus d'informations de la base de données, assurez-vous que $user->getId() existe et est valide
-        // $user = $this->userService->getById($userId); // Seulement si nécessaire
         
         $this->viewRenderer->render('profile', ['user' => $user]);
     }

@@ -15,7 +15,6 @@ class BaseAuthDecorator implements AuthInterface {
     }
 
     public function authenticate($data): bool {
-        // return $this->authService->authenticate($data);
         if (isset($data['google'])) {
             return $this->googleAuthService->authenticate($data);
         } else {

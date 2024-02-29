@@ -1,7 +1,6 @@
 <?php
 namespace App\Controller;
 
-use App\Service\PostService;
 use App\Class\Redirector;
 use App\View\ViewRenderer;
 use App\Repository\PostRepository;
@@ -26,18 +25,19 @@ class PostController implements ControllerInterface
 
   public function create($request)
   {
-    $categoryId = $request['category'] ?? null;
-    $content = $request['content'] ?? '';
-    $title = $request['title'] ?? '';
-    $userId = $_SESSION['user']->getId();
+    $title = $request['title'];
+    $content = $request['content'];
+    $userId = $request['userId'];
+    $createdAt = $request['createdAt'];
 
-    if (is_null($categoryId) || is_null($userId) || empty($content) || empty($title)) {
+  
+    if ( is_null($userId) || empty($content) || empty($title)) {
       $this->redirector->redirect('posts', ['1', 'error' => 'Article invalide']);
       return;
     }
 
     try {
-      $this->postService->create($title, $content, $userId, $categoryId);
+      $this->postService->create($request);
       $this->redirector->redirect('posts', ['1']);
     } catch (\Exception $e) {
       $this->redirector->redirect('posts', ['1', 'error' => $e->getMessage()]);
@@ -47,12 +47,11 @@ class PostController implements ControllerInterface
   public function update($request)
   {
     $postId = $request['id'] ?? null;
-    $categoryId = $request['category'] ?? null;
     $content = $request['content'] ?? '';
     $title = $request['title'] ?? '';
     $userId = $_SESSION['user']->getId();
 
-    if (is_null($postId) || is_null($categoryId) || is_null($userId) || empty($content) || empty($title)) {
+    if (is_null($postId) || is_null($userId) || empty($content) || empty($title)) {
       $this->redirector->redirect('posts', ['1', 'error' => 'Données de publication invalides']);
       return;
     }
@@ -76,9 +75,10 @@ class PostController implements ControllerInterface
   }
 
 
-  public function paginatedPosts($page)
+  public function paginatedPosts(int $page)
   {
-    $postIterator = new PostIterator($this->postRepository->findAllPaginated($page));
+    $pageNumber = (int) $page;
+    $postIterator = new PostIterator($this->postRepository->findAllPaginated($pageNumber));
     $pages = count($this->postRepository->findAll()) / 10;
     $this->viewRenderer->render('posts', ['posts' => $postIterator, 'pages' => $pages]);
   }

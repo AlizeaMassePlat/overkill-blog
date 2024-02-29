@@ -1,6 +1,5 @@
 <?php
 
-use App\Class\Controller;
 use App\Controller\UserController;
 use App\Router\Router;
 use App\Service\UserService;
@@ -38,7 +37,6 @@ if (isset($_SESSION['user']['auth_type'])) {
     <?php  $userType = $_SESSION['user']['role'];
     
 $user = UserFactory::createUser($userType); 
-// var_dump($userType); die;
 ?>
        
         <?php $userId = UserController::getUser()->getId(); ?>

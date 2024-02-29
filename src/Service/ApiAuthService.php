@@ -35,6 +35,7 @@ class ApiAuthService implements AuthInterface {
         $user->setPassword('');
 
         $_SESSION['user'] = [
+            'id' => $user->getId() ? : '',
             'name' => $user->getFirstname() . ' ' . $user->getLastname(),
             'email' => $user->getEmail(),
             'role' => $user ->getRole()[0],

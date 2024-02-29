@@ -6,7 +6,6 @@ use App\Service\CommentService;
 use App\Class\Redirector;
 use App\View\ViewRenderer;
 use App\Interface\ControllerInterface;
-use App\Iterator\CommentIterator;
 
 class CommentController implements ControllerInterface
 {
