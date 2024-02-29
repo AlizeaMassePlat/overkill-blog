@@ -23,7 +23,7 @@ class CommentService implements ServiceInterface
         $comment = new CommentModel();
         $comment->setContent($content);
         $comment->setPostId($postId);
-        $comment->setUserId($_SESSION['user']->getId());
+        $comment->setUserId($_SESSION['user']['id']);
         $comment->setCreatedAt(new \DateTime());
 
         $this->commentRepository->save($comment);

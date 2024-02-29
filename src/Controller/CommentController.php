@@ -24,8 +24,7 @@ class CommentController implements ControllerInterface
     {
         $postId = $request['post_id'] ?? null;
         $content = $request['content'] ?? '';
-
-        if (is_null($postId) || is_null($_SESSION['user']->getId()) || empty($content)) {
+        if (is_null($postId) || is_null($_SESSION['user']['id']) || empty($content)) {
             $this->redirector->redirect('post', ['id' => $postId, 'error' => 'Commentaire invalide']);
             return;
         }
