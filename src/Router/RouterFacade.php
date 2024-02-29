@@ -8,7 +8,8 @@ class RouterFacade
 
   public static function setBasePath($basePath): void
   {
-    self::$router = new Router($_SERVER['REQUEST_URI']);
+    $requestPath = explode('?', $_SERVER['REQUEST_URI'])[0];
+    self::$router = new Router($requestPath);
     self::$router->setBasePath($basePath);
   }
 
